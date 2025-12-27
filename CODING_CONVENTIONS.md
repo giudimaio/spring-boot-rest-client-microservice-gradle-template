@@ -1,177 +1,192 @@
-# Convenzioni
+# Conventions
 
-Questo documento raccoglie le convenzioni utilizzate nello sviluppo del codice del presente progetto.
+This document collects the conventions used in developing the code for this project.
 
-:warning: **Il presente documento è una bozza; va ancora validato alla luce dei processi già identificati per il più
-ampio ambito di PICO.**
+## Development Flow
 
-## Flusso di sviluppo
+The proposed development flow is a simplification
+of [GitFlow](https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow). In short:
 
-Il flusso di sviluppo proposto è una semplificazione
-di [GitFlow](https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow). In breve:
+- the repository's default branch is the `develop` branch.
+- unless otherwise noted, no one commits/pushes directly to `develop`.
+- development tasks are collected as issues on the GitHub repository.
+- whenever a developer has no tasks, they can simply consult the list of issues and
+select one that isn't already assigned to someone else and has the `development` label (giving priority
+to those with the `high priority` label and avoiding those with the `blocked` label).
+- once an issue is selected, the developer assigns it to themselves, then creates a new branch from the
+`develop` branch. The naming convention for creating branches is `<prefix>/<issue-number>`:
+- `<prefix>` is a term that indicates the type of task, following the same conventions dictated by
+[Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) (e.g., if the task consists of the development
+of a new feature, the prefix will be `feat/`; if it is a bug fix, it will be `fix/`)
+- `issue-number` is the identification number of the issue chosen by the developer, without the `#` character.
+- Some examples: `feat/12`, `fix/14`, `refactor/44`
+- The developer is encouraged to perform frequent commits on their newly created branch. This will allow, if necessary,
+to easily analyze what has been done while solving the task, because every small change
+will correspond to a commit (and a related message).
+- Similarly, the developer is encouraged to perform frequent _merges_ from `develop` to their _branch_, so as to
+keep it up to date and simplify the _merge_ activities once the tasks are completed.
+- Once the developer believes they have completed the activity described in the _Issue_, they can open a _Pull
+Request_, which will then be reviewed and possibly approved, determining the _merge_ of the developer's _branch_
+into the _develop_ _branch.
+- To prepare a new release, a _release_ _branch_ is created (each time) starting from the _develop_ _branch.
+This branch is used by CI/CD processes for installation in pre-production environments.
+- If any fixes emerge during pre-production testing, they will be applied directly to the `release` branch. In other words, once the `release` branch is generated, there's no going back; the `release` branch is "hammered" until it passes the tests (obviously, this means that before generating the
+`release` branch, you must be reasonably certain that the code is ready to pass the tests).
+- Once the pre-production tests have passed, the `release` branch is merged into the `main` branch at the same time as the production release. The latter must always be a faithful snapshot of the status of the code in the production environment.
+- Once the transition to production is complete, the `release` branch is deleted (it will be recreated in the next release) and
+the `main` branch is merged into the `develop` branch (so as to realign `develop` with any corrections made during pre-production testing).
 
-- il _default branch_ del repository è il _branch_ `develop`
-- a meno di eccezioni, nessuno esegue commit/push direttamente su `develop`
-- i task di sviluppo vengono raccolti sotto forma di _Issue_ sul repository GitHub
-- ogni qualvolta uno sviluppatore si ritrova libero da task può semplicemente consultare la lista delle _Issue_ e
-  selezionarne una che non sia già assegnata a qualcun altro, e che abbia la label `development` (dando priorità a
-  quelle con _label_ `high priority` ed evitando quelle con label `blocked`)
-- una volta selezionata una _Issue_, lo sviluppatore la assegna a sé stesso, quindi crea un nuovo _branch_ a partire dal
-  _branch_ `develop`; la _naming convention_ per la creazione dei _branch_ è `<prefisso>/<numero-issue>`:
-    - `<prefisso>` è una dicitura che indica il tipo di task, seguendo le stesse convenzioni dettate
-      da [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) (e.g. se il task consiste nello sviluppo
-      di una nuova _feature_, il prefisso sarà `feat/`; se si tratta della risoluzione di un bug sarà `fix/`)
-    - `numero-issue` è il numero identificativo della _Issue_ scelta dallo sviluppatore, senza il carattere `#`
-    - alcuni esempi: `feat/12`, `fix/14`, `refactor/44`
-- sul proprio _branch_ così creato, lo sviluppatore **è esortato ad eseguire _commit_ frequenti**; questo consentirà se
-  necessario di analizzare facilmente quanto fatto durante la risoluzione del task, perché ad ogni piccola modifica
-  corrisponderà un commit (e un relativo messaggio)
-- similmente, lo sviluppatore è esortato ad eseguire _merge_ frequenti da `develop` al proprio _branch_, così da
-  mantenerlo aggiornato e semplificare le attività di _merge_ ad attività ultimate
-- una volta che lo sviluppatore riterrà di aver completato l'attività descritta nella _Issue_ potrà aprire una _Pull
-  Request_, che verrà quindi rivista ed eventualmente approvata, determinando il _merge_ del _branch_ dello sviluppatore
-  nel _branch_ `develop`
-- questo repository (all'interno della cartella `.github`) offre un template per la creazione della _Pull Request_, che
-  viene automaticamente utilizzato da GitHub quando lo sviluppatore ne crea una nuova; tale template presenta dei
-  contenuti esemplificativi, che lo sviluppatore deve sostituire con quelli rilevanti alla propria specifica _Pull
-  Request_
-- per preparare un nuovo rilascio, viene _creato_ (ogni volta) a partire dal _branch_ `develop` un _branch_ `release`;
-  tale _branch_ viene utilizzato dai processi CI/CD per l'installazione negli ambienti di pre-produzione
-- qualora durante i test di pre-produzione emergessero correzioni da eseguire, queste verranno effettuate _direttamente
-  sul _branch_ `release`_; in altre parole, una volta generato il _branch_ `release` non si torna più indietro, si "
-  martella" il _branch_ `release` finché questo non passa i test (ovviamente questo significa che prima di generare il
-  _branch_ `release` occorre essere ragionevolmente certi che il codice sia pronto a superare i test)
-- una volta superati i test di pre-produzione, contestualmente al passaggio in produzione, viene effettuato il _merge_
-  del _branch_ `release` nel _branch_ `main`; quest'ultimo dovrà essere in ogni momento una fedele diapositiva dello
-  stato del codice nell'ambiente di produzione
-- terminato il passaggio in produzione, il _branch_ `release` viene eliminato (verrà ricreato al rilascio successivo) e
-  viene eseguito il _merge_ del _branch_ `main` nel _branch_ `develop` (così da riallineare `develop` ad eventuali
-  correzioni eseguite in corso d'opera durante i test di pre-produzione)
+There is also a dedicated process for urgent fixes:
 
-Esiste anche un processo dedicato per le fix urgenti:
+- a `hotfix` branch is created from the `main` branch.
+- the developer responsible for the urgent fix (which will still be represented by a GitHub Issue, marked with the `development`, `high priority`, and above all `hotfix` labels) creates a new branch, with the same conventions described
+for the normal process, but starting from the `hotfix` branch instead of the `hotfix` branch. _branch_ `develop`**
+- the developer then implements what is needed on their own _branch_ thus created; once ready for
+publication, the developer opens a _Pull Request_ according to the same conventions described for the
+normal process, but opens it towards the _branch_ `hotfix`.
+- the contents of the _branch_ `hotfix` are used for pre-production testing; Similar to what happens
+in the normal process, any fixes from now on are performed directly on the `hotfix` branch.
 
-- viene _creato_ un _branch_ `hotfix` a partire dal _branch_ `main`
-- lo sviluppatore incaricato della fix urgente (che sarà comunque rappresentata da una _Issue_ GitHub, contrassegnata da
-  label `development`, `high priority` e soprattutto `hotfix`) crea un nuovo branch, con le stesse convenzioni descritte
-  per il processo normale **ma partendo dal _branch_ `hotfix` anziché dal _branch_ `develop`**
-- lo sviluppatore implementa quindi quanto necessario sul proprio _branch_ così creato; una volta pronto alla
-  pubblicazione, lo sviluppatore apre una _Pull Request_ secondo le stesse convenzioni descritte per il processo
-  normale, ma la apre verso il _branch_ `hotfix`
-- il contenuto del _branch_ `hotfix` viene utilizzato per eseguire i test di pre-produzione; similmente a come accade
-  nel processo normale, qualsiasi correzione viene da qui in poi eseguita _direttamente sul _branch_ `hotfix`_
-- una volta superati i test di pre-produzione, contestualmente al passaggio in produzione, viene effettuato il _merge_
-  del _branch_ `hotfix` nel _branch_ `main`
-- terminato il passaggio in produzione, il _branch_ `hotfix` viene eliminato (verrà ricreato al rilascio successivo) e
-  viene eseguito il _merge_ del _branch_ `main` nel _branch_ `develop` (così da riallineare `develop` ad eventuali
-  correzioni eseguite in corso d'opera durante i test di pre-produzione)
+Once the pre-production tests have passed, the `hotfix` branch is merged into the `main` branch at the same time as the release to production.
 
-## Linguaggio
+Once the release to production is complete, the `hotfix` branch is deleted (it will be recreated in the next release) and
+the `main` branch is merged into the `develop` branch (so as to realign `develop` with any
+fixes made during pre-production testing).
 
-I documenti del progetto (file `README`, etc) sono scritti in lingua italiana, in quanto la probabilità che vengano
-consultati da lettori non italiani è bassissima.
+There is also a dedicated process for urgent fixes:
 
-Il codice del progetto, le configurazioni, e tutto il resto del contenuto, sono invece scritti in lingua inglese.
+- a `hotfix` branch is created from the `main` branch.
+- the developer responsible for the urgent fix (which will still be represented by a GitHub Issue, marked with the `development`, `high priority`, and above all `hotfix` labels) creates a new branch, following the same conventions described for the normal process, but starting from the `hotfix` branch instead of the `develop` branch.
+- the developer then implements what is needed on their newly created branch. Once ready for publication, the developer opens a Pull Request following the same conventions described for the normal process, but opening it towards the `hotfix` branch.
+- the contents of the `hotfix` branch are used for pre-production testing. Similar to what happens
+in the normal process, any fixes from now on are made directly on the `hotfix` branch.
 
-All'interno del codice del progetto viene rispettato un [glossario](./GLOSSARY.md) comune, al fine di evitare di
-chiamare una stessa entità in modi diversi. Ad esempio, l'espressione _"Richiesta di assistenza"_ è stata tradotta con
-_"Support Request"_; _tutti_ i riferimenti a questa espressione dovranno quindi utilizzare il termine
-_"Support Request"_, e non un suo sinonimo e.g. _"Assistance Request"_. Quando uno sviluppatore si imbatte in un nuovo
-termine, aggiorna il glossario con la traduzione scelta per quel nuovo termine.
+Once the pre-production tests have passed, the `hotfix` branch is merged into the `main` branch at the same time as the release to production.
 
-I messaggi dei _commit_ saranno scritti in lingua inglese, mentre i messaggi degli _squash commit_ introdotti
-dalle MR nel _branch_ `develop` saranno in lingua italiana, così da determinare la generazione di note di rilascio in
-lingua italiana.
+Once the release to production is complete, the `hotfix` branch is deleted (it will be recreated in the next release) and
+the `main` branch is merged into the `develop` branch (so as to realign `develop` with any
+fixes made during pre-production testing).
+
+## Language
+
+The project documents (`README` files, etc.) are written in Italian, as the likelihood of them
+being consulted by non-Italian readers is very low.
+
+The project code, configurations, and all other content are written in English.
+
+A common [glossary](./GLOSSARY.md) is followed within the project code to avoid referring to the same entity in different ways. For example, the expression "Richiesta di assistenza" has been translated as
+"Support Request"; all references to this expression should therefore use the term
+"Support Request" and not a synonym, such as "Assistance Request". When a developer encounters a new term,
+they update the glossary with the chosen translation for that new term.
+
+Commit messages will be written in English, while squashed commit messages introduced
+by MRs in the `develop` branch will be in Italian, thus determining the generation of release notes in
+Italian.
 
 ## Pattern
 
-L'applicazione osserva un pattern ricorrente per l'esposizione di operazioni tramite servizi web:
+The application observes a recurring pattern for exposing operations via web services:
 
-- le entità gestite dall'applicazione sono definite nel package
-  `com.ibm.fstech.smart.console.be.buoni.sconto.model.entity`
-- le operazioni da esporre ai client web sono definite nel package
-  `com.ibm.fstech.smart.console.be.buoni.sconto.controller`, all'interno di
-  classi che si conformano alle seguenti specifiche (si veda la classe [
-  `DummyController`](./src/main/java/it/poste/pv/be/form/mail/controller/DummyController.java) a titolo di esempio):
-    - per ogni risorsa REST esposta viene definita una classe dedicata
-    - il nome della classe coincide con quello della risorsa REST volta al singolare, al quale viene aggiunto il
-      suffisso `Controller`; ad esempio la classe contenente le operazioni relative all'esposizione della risorsa
-      `/employees` si chiamerà `EmployeeController`
-    - la classe è annotata con le annotazioni `@RestController`, `@RequestMapping` e `@RequiredArgsConstructor`
-    - all'annotazione `@RequestMapping` viene passato come unico parametro il nome della _base path_ della risorsa
-      esposta, e.g. `@RequestMapping("/employee")`
-    - il nome delle risorse non viene però mai definito tramite stringhe statiche all'interno delle classi controller;
-      viene invece definito nell'apposita classe `ApiConstants`, nel package
-      `com.ibm.fstech.smart.console.be.buoni.sconto.model.framework`; in questo modo, l'annotazione diventa e.g.
-      `@RequestMapping(ApiConstants.EmployeesController.BASE_PATH)`
-    - la classe `ApiConstants` definisce quindi in un unico punto i nomi di tutte le risorse esposte, tramite
-      sotto-classi
-      statiche dedicate; eventuali valori potenzialmente riutilizzabili da molteplici classi controller vengono invece
-      definiti nella sotto-classe statica `ApiConstants.Common`
-    - le singole operazioni esposte presso la risorsa vengono definite tramite l'uso delle annotazioni `@GetMapping`,
-      `@PostMapping`, `@PutMapping`, etc; a tali annotazioni viene passato come parametro di input il nome della risorsa
-      esposta, se presente, oppure la costante `ApiConstants.Common.EMPTY_PATH` se l'operazione espone la risorsa
-      presente
-      alla _base path_
-    - la responsabilità della classe è unicamente quella di esporre le operazioni, i metodi della classe delegano
-      qualsiasi logica di business alla relativa classe _service_
-    - la classe _service_ viene istanziata tramite una variabile `private final`, ci pensa poi Lombok (tramite
-      l'annotazione `@RequiredArgsConstructor`) a definire il costruttore che consente l'istanziazione
-- la logica di business eseguita a fronte dell'invocazione delle operazioni REST è implementata nel package
-  `com.ibm.fstech.smart.console.be.buoni.sconto.application.service`, all'interno di classi che si conformano alle
-  seguenti specifiche (si veda la classe `DummyService` nel modulo `application` a titolo di esempio):
-    - per ogni risorsa REST esposta viene definita una classe dedicata
-    - il nome della classe coincide con quello della risorsa REST volta al singolare, al quale viene aggiunto il
-      suffisso `Service`; ad esempio la classe contenente la logica di business delle operazioni relative
-      all'esposizione della risorsa`/employees` si chiamerà `EmployeeService`
-    - la classe è annotata con l'annotazione `@Service` e, qualora sia necessaria l'istanziazione di altre classi (e.g.
-      per l'accesso al database), `@RequiredArgsConstructor`
-    - la responsabilità della classe è quella di fornire l'implementazione principale relativa alle operazioni REST
-      definite nelle classi controller; eventuale logica specializzata (e.g. per accedere al database, invocare servizi
-      esterni, etc) viene delegata ad apposite classi, che vengono instanziate tramite property `private final`
-- la logica di accesso al database è implementata nel package
-  `com.ibm.fstech.smart.console.be.buoni.sconto.application.repository`, all'interno di interfacce che si conformano
-  alle seguenti specifiche (si veda la classe `DummyRepository` a titolo di esempio):
-    - per ogni entità JPA definita nel package `com.ibm.fstech.smart.console.be.buoni.sconto.model.entity` del modulo
-      `model` viene definita un'interfaccia dedicata
-    - il nome dell'interfaccia coincide con quello dell'entità, al quale viene aggiunto il suffisso `Repository`; ad
-      esempio l'interfaccia che consente l'accesso alla tabella definita dalla entity `Dummy` si chiamerà
-      `DummyRepository`
-    - l'interfaccia estende l'interfaccia `JpaRepository<K,V>`; se possibile, è opportuno raccogliere metodi di query
-      comuni in interfacce "di base" ed estendere quelle; a titolo di esempio si veda l'interfaccia
-      `BaseUuidRepository`, utilizzabile per tutte quelle _repository interface_ le cui entità presuppongano la presenza
-      di una colonna `String uuid`
-    - l'interfaccia non è annotata con alcuna annotazione; non è quindi necessario utilizzare l'annotazione
-      `@Component`, `@Repository` o nessun'altra
-    - le query definite all'interno dell'interfaccia devono utilizzare il più possibile la
-      feature [JPA Query Methods](https://docs.spring.io/spring-data/jpa/reference/jpa/query-methods.html), l'utilizzo
-      di query esplicite tramite l'annotation `@Query` va evitata a meno di eccezioni estreme
-    - qualora fosse necessario, a fronte di una query, restituire solo alcune delle colonne della tabella, l'indicazione
-      è quella di utilizzare la tecnica delle "proiezioni"; a titolo di esempio si veda l'interfaccia
-      `BaseUuidRepository`, dove al fine di restituire la sola colonna `id` viene utilizzata la proiezione
-      `IdProjection`
-- i DTO (Data Transfer Objects) utilizzati dall'applicazione sono definiti nel package
-  `com.ibm.fstech.smart.console.be.buoni.sconto.model.dto` del modulo `model`, e si dividono in due ulteriori package:
-    - `web`: questi DTO sono utilizzati per l'integrazione tramite interfacce web, ad esempio trovano posto in questo
-      package le request e response dei controller REST dell'applicazione
-    - `persistence`: questi DTO sono utilizzati per l'integrazione con il database, ad esempio trovano posto in questo
-      package le proiezioni che consentono di limitare l'output di una query solo ad alcune colonne della tabella
+- the entities managed by the application are defined in the package
+`com.corp.it.sample.message.consumer.model.entity`
+- the operations to be exposed to web clients are defined in the package
+`com.corp.it.sample.message.consumer.controller`, within
+classes that conform to the following specifications (see the class [
+`DummyController`](./src/main/java/it/poste/pv/be/form/mail/controller/DummyController.java) as an example):
+- a dedicated class is defined for each exposed REST resource
+- the class name coincides with that of the REST resource in the singular, appended with the
+`Controller` suffix; For example, the class containing the operations related to exposing the resource
+`/employees` will be called `EmployeeController`
+- The class is annotated with the annotations `@RestController`, `@RequestMapping`, and `@RequiredArgsConstructor`
+- The `@RequestMapping` annotation is passed as its only parameter the name of the _base path_ of the exposed resource,
+e.g., `@RequestMapping("/employee")`
+- However, the name of the resources is never defined via static strings within the controller classes;
+it is instead defined in the dedicated `ApiPaths` class, in the
+`com.corp.it.sample.message.consumer.model.framework` package; thus, the annotation becomes, e.g.,
+`@RequestMapping(ApiPaths.EmployeesController.BASE_PATH)`
+- The `ApiPaths` class therefore defines the names of all exposed resources in a single place, through dedicated
+static subclasses; any values ​​potentially reusable by multiple controller classes are instead
+defined in the static subclass `ApiPaths.Common`.
+- The individual operations exposed at the resource are defined using the `@GetMapping`,
+`@PostMapping`, `@PutMapping`, etc. annotations; These annotations are passed as an input parameter the name of the exposed resource,
+if present, or the constant `ApiPaths.Common.EMPTY_PATH` if the operation exposes the resource present
+at the _base path_
+- the class's responsibility is solely to expose the operations; the class's methods delegate
+any business logic to the related _service_ class.
+- the _service_ class is instantiated via a `private final` variable; Lombok then defines the constructor that allows instantiation (using
+the `@RequiredArgsConstructor` annotation).
+- The business logic executed when REST operations are invoked is implemented in the
+`com.corp.it.sample.message.consumer.application.service` package, within classes that conform to the
+following specifications (see the `DummyService` class in the `application` module as an example):
+- A dedicated class is defined for each exposed REST resource.
+- The class name coincides with that of the REST resource in the singular, to which the
+`Service` suffix is ​​added. For example, the class containing the business logic for operations related
+to exposing the `/employees` resource will be called `EmployeeService`.
+
+The class is annotated with the `@Service` annotation and, if other classes need to be instantiated (e.g.,
+for database access), `@RequiredArgsConstructor`.
+
+The class is responsible for providing the main implementation of the REST operations
+defined in the controller classes. Any specialized logic (e.g., to access the database, invoke external services,
+etc.) is delegated to specific classes, which are instantiated via the `private final` property.
+- The database access logic is implemented in the
+`com.corp.it.sample.message.consumer.application.repository` package, within interfaces that conform
+to the following specifications (see the `DummyRepository` class for an example):
+- For each JPA entity defined in the `com.corp.it.sample.message.consumer.model.entity` package of the
+`model` module, a dedicated interface is defined.
+- The interface name coincides with that of the entity, appended with the suffix `Repository`; for
+example, the interface that allows access to the table defined by the `Dummy` entity will be called
+`DummyRepository`.
+- The interface extends the `JpaRepository<K,V>` interface. If possible, it's a good idea to gather common query methods
+into "base" interfaces and extend them; for example, see the
+`BaseUuidRepository` interface, which can be used for all repository interfaces whose entities require the presence
+of a `String uuid` column.
+
+The interface is not annotated with any annotation; it is therefore not necessary to use the
+`@Component`, `@Repository`, or any other annotation.
+
+Queries defined within the interface should use the
+[JPA Query Methods](https://docs.spring.io/spring-data/jpa/reference/jpa/query-methods.html) feature as much as possible. The use
+of explicit queries using the `@Query` annotation should be avoided except in extreme cases.
+
+If a query needs to return only some of the table's columns, the recommendation
+is to use the "projections" technique. For example, see the
+`BaseUuidRepository` interface, where the projection
+`IdProjection` is used to return only the `id` column.
+- The DTOs (Data Transfer Objects) used by the application are defined in the
+`com.corp.it.sample.message.consumer.model.dto` package of the `model` module, and are divided into two additional packages:
+- `web`: These DTOs are used for integration via web interfaces; for example, this package contains the requests and responses of the application's REST controllers.
+- `persistence`: These DTOs are used for database integration; for example, this package contains the projections that allow you to limit the output of a query to only certain columns in the table.
 
 ## Tooling
 
-È necessario l'utilizzo di una IDE che consenta di configurare `CheckStyle` come tool di formattazione del codice,
-tipicamente questo avviene tramite un plugin. Il plugin deve a sua volta essere configurato in modo tale da eseguire la
-formattazione del codice in base al file `style_checks.xml`.
+You need an IDE that allows you to configure `CheckStyle` as a code formatting tool.
+This is typically done via a plugin. The plugin must in turn be configured to perform
+code formatting based on the `checkstyle.xml` file.
 
-A titolo di esempio, in IntelliJ Idea la configurazione richiede le seguenti operazioni:
+For example, in IntelliJ Idea, configuration requires the following steps:
 
-- installazione del plugin `Checkstyle-Idea`
-- navigazione, nelle impostazioni di Intellij, al menu `Settings|Editor|Code Style`
-    - selezionare, nel dropdown _Scheme_, l'opzione `Project`
-    - cliccare l'icona _Ingranaggio_, quindi selezionare `Import Scheme|Checkstyle configuration`, infine selezionare il
-      file `style_checks.xml` (dalla root di queste repository) come file di riferimento dal quale importare la
-      configurazione
+- Install the `Checkstyle-Idea` plugin
+- Navigate to the `Settings|Editor|Code Style` menu in IntelliJ settings
+- Select the `Project` option from the _Scheme_ dropdown
+- Click the _Gear_ icon, then select `Import Scheme|Checkstyle configuration`, and finally select the
+`checkstyle.xml` file (from the root of these repositories) as the reference file from which to import the
+configuration.
 
-Analogamente, è necessario l'utilizzo di una IDE che consenta di applicare le regole di formattazione facilmente
-all'intera codebase, per evitare di dover correggere lo stile un file alla volta; ancora una volta IntelliJ costituisce
-un esempio virtuoso, consentendo di riformattare il codice in un intero modulo o addirittura di formattarlo pre-commit
-(maggiori informazioni [qui](https://www.jetbrains.com/help/idea/reformat-and-rearrange-code.html)).
+Similarly, it is necessary to use an IDE that allows you to easily apply formatting rules
+to the entire codebase, to avoid having to correct the style file by file. Once again, IntelliJ provides
+a virtuous example, allowing you to reformat code into an entire module or even format it pre-commit
+(more information [here](https://www.jetbrains.com/help/idea/reformat-and-rearrange-code.html)).
+
+:warning: **Warning: It is essential to exclude the `sample-message-consumer-feign-api` module from the scope of application
+of the style rules.**
+This module is in fact auto-generated at each build, and the generated files do not necessarily respect the parameters
+contained in the template defined in the `checkstyle.xml` file; If you don't exclude it from the scope of application of the rules,
+each PR risks carrying dozens (or even hundreds) of modified files each time, that is,
+the generated files to which formatting is applied/reset each time.
+
+In IntelliJ, the simplest way to exclude the module is to mark it as 'Excluded':
+
+![Exclusion Example](./docs/img/IJ-mark-directory-as.png)
+
+Make sure all the folders within it are also excluded.
