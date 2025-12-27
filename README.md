@@ -1,4 +1,4 @@
-# Spring Boot Backend Template
+# spring-boot-rest-client-microservice-gradle-template
 
 This project serves as a template for Gradle-based Spring Boot backend applications.
 It allows you to quickly create new projects with a modular structure and ready-to-use configurations.
@@ -78,3 +78,4 @@ python3 tools/generate.py \
 --corp-name my-corp \
 --out-dir my-out-dir
 ```
+
