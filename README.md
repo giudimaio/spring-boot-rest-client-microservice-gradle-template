@@ -1,88 +1,80 @@
 # Spring Boot Backend Template
 
-Questo progetto serve come **template per applicazioni Spring Boot backend** basate su Gradle.  
-Permette di creare rapidamente nuovi progetti con una struttura modulare e configurazioni pronte all'uso.
+This project serves as a template for Gradle-based Spring Boot backend applications.
+It allows you to quickly create new projects with a modular structure and ready-to-use configurations.
 
 ---
 
-## Struttura del template
+## Template Structure
 
-Il template è organizzato in più moduli; contiene:
+The template is organized into multiple modules; it contains:
 
-### Modulo `application`
+### `application` Module
 
-- Contiene il **core dell’applicazione** Spring Boot.
-- Struttura tipica:
+- Contains the Spring Boot application core.
+- Typical structure:
 
-  ```
-  APP_NAME-application/
-  ├─ src/main/java/com/CORP_NAME/it/APP_NAME/application/
-  │ └─ Application.java # classe main di Spring Boot
-  ├─ src/main/resources/
-  │ └─ application.yml # configurazioni Spring
-  ├─ src/test/java/...
-  └─ build.gradle.kts # configurazioni Gradle per il modulo
-  ```
+```
+APP_NAME-application/
+├─ src/main/java/com/CORP_NAME/it/APP_NAME/application/
+│ └─ Application.java # Spring Boot main class
+├─ src/main/resources/
+│ └─ application.yml # Spring configurations
+├─ src/test/java/...
+└─ build.gradle.kts # Gradle configurations for the module
+```
 
-
-- **Classi principali**:
-    - `Application.java`: classe main annotata con `@SpringBootApplication`.
-    - Directory `com.__CORP_NAME__.it.__APP_NAME__.application` da sostituire con i nomi della corporation e dell’applicazione.
-
----
-
-## Generazione di un nuovo progetto
-
-Per creare un nuovo progetto basato su questo template, utilizza lo script `generate.py` presente nella cartella `tools/`.
-
-## Script di generazione del progetto
-
-Lo script `generate.py` permette di creare un nuovo progetto Spring Boot a partire dal template, sostituendo placeholder e rinominando le cartelle.
+- **Main classes**:
+- `Application.java`: main class annotated with `@SpringBootApplication`.
+- `com.__CORP_NAME__.it.__APP_NAME__.application` directory, replaced with the names of the corporation and application.
 
 ---
 
-### Opzioni
+## Generating a new project
 
-| Opzione          | Obbligatoria | Descrizione                                                               |
-|-----------------|--------------|--------------------------------------------------------------------------|
-| `--program-name` | Sì           | Nome del progetto/program                                    |
-| `--app-name`     | Sì           | Nome dell’applicazione                            |
-| `--corp-name`    | Sì           | Nome della corporation                                 |
-| `--out-dir`      | No           | Cartella di destinazione per il progetto generato (default: `./out`)     |
-| `--force`        | No           | Sovrascrive eventuali cartelle già esistenti                              |
+To create a new project based on this template, use the `generate.py` script in the `tools/` folder.
+
+## Project Generation Script
+
+The `generate.py` script allows you to create a new Spring Boot project from the template, replacing placeholders and renaming folders.
 
 ---
 
-### Come funziona lo script
+### Options
 
-1. **Copia del template:**  
-   Copia tutto il contenuto del template in una **cartella temporanea**, evitando di modificare il template originale.
+| Option | Required | Description |
+|-----------------|-------------|--------------------------------------------------------------------------|
+| `--program-name` | Yes | Project name/program |
+| `--app-name` | Yes | Application name |
+| `--corp-name` | Yes | Corporation name |
+| `--out-dir` | No | Destination folder for the generated project (default: `./out`) |
+| `--force` | No | Overwrites any existing folders |
 
-2. **Rinomina delle directory:**  
-   Tutte le cartelle contenenti i placeholder `__CORP_NAME__` e `__APP_NAME__` vengono rinominate, anche se fanno parte di nomi più lunghi (es. `__APP_NAME__-application` → `viaggiatreno-application`).
+---
 
-3. **Sostituzione dei placeholder nei file:**  
-   Nei file con estensione `.java`, `.kt`, `.gradle`, `.yml`, `.yaml`, `.properties`, il contenuto `__CORP_NAME__` e `__APP_NAME__` viene sostituito con i valori forniti.
+### How the script works
 
-4. **Rimozione dello script di generazione:**  
-   Lo script `generate.py` presente nella cartella `tools/` viene rimosso dal progetto generato.
+1. **Copy the template:**
+Copies the entire template content to a **temporary folder**, avoiding modifying the original template.
 
-5. **Creazione della cartella finale:**  
-   La cartella temporanea viene spostata nella destinazione finale con nome:
+2. **Rename directories:**
+All folders containing the placeholders `__CORP_NAME__` and `__APP_NAME__` are renamed, even if they are part of longer filenames (e.g., `__APP_NAME__-application` → `viaggiatreno-application`).
 
+3. **Replace placeholders in files:**
+In files with the extensions `.java`, `.kt`, `.gradle`, `.yml`, `.yaml`, and `.properties`, the contents of `__CORP_NAME__` and `__APP_NAME__` are replaced with the provided values.
 
+4. **Removing the generation script:**
+The `generate.py` script in the `tools/` folder is removed from the generated project.
 
-### Esempio di esecuzione
+5. **Creating the final folder:**
+The temporary folder is moved to the final destination with the name:
+
+### Example execution
 
 ```bash
 python3 tools/generate.py \
-    --program-name my-program \
-    --app-name my-app \
-    --corp-name my-corp \
-    --out-dir my-out-dir
+--program-name my-program \
+--app-name my-app \
+--corp-name my-corp \
+--out-dir my-out-dir
 ```
-
-
-
-
-
