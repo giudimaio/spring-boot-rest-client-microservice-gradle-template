@@ -1,105 +1,102 @@
-# `smart-console-be-buoni-sconto`
+# `spring-boot-rest-client-microservice`
 
-## Panoramica
+## Overview
 
-Questa applicazione è stata generata tramite un _archetype_ Maven, ed è organizzata come segue:
+This application was generated using a Maven archetype and is organized as follows:
 
-- Modulo `application`, ospita l'applicazione vera e propria; contiene:
-    - la classe _main_ dell'applicazione (`Application.java`)
-    - le classi di configurazione (package `config`)
-    - le classi repository relative a entità di dominio (package `repository`)
-    - la logica di business (package `controller` e `service`)
-- Modulo `model`, contiene le entità (POJO, tendenzialmente) referenziate dall'applicazione; si suddivide in:
-    - package `entity`, contenente le definizioni JPA delle tabelle del database
-    - package `framework`, contenente entità "di servizio"; ad esempio la classe `ApiConstants.java` raccoglie in un
-      unico
-      punto i nomi delle risorse REST
-    - package `dto`, contiene gli oggetti preposti al transito di dati (Data Transfer Objects, appunto); si suddivide in
-      package `web`, contenente i DTO utilizzati dalle classi `*Controller`, e package `persistence`, contenente i DTO
-      utilizzati nell'integrazione con il database
-- Modulo `framework`, contiene le classi che definiscono comportamenti e usi scelti per l'applicazione, ad esempio la
-  _naming strategy_ adottata da JPA per assegnare un nome alle tabelle/colonne del database. Questo modulo è pensato per
-  contenere classi agnostiche rispetto alla logica di business della specifica applicazione oggetto del progetto; in
-  altre parole, questo modulo potrebbe (e dovrebbe) esistere in un unico punto centrale, ed essere condiviso da tutte le
-  applicazioni che costituiscano un sistema.
-- Modulo `ddl-gen`, questo modulo **non entra a far parte del _classpath_**, è solo un tool di servizio che consente di
-  generare gli script SQL necessari alla creazione (e alla distruzione) delle tabelle definite nel modulo `model`.
+- The `application` module hosts the application itself; it contains:
+- The application's main class (`Application.java`)
+- Configuration classes (`config` package)
+- Repository classes for domain entities (`repository` package)
+- Business logic (`controller` and `service` packages)
+- The `model` module contains the entities (usually POJOs) referenced by the application; it is divided into:
+- The `entity` package contains the JPA definitions of the database tables
+- The `framework` package contains "service" entities; For example, the `ApiConstants.java` class collects the names of REST resources in a
+single location
+- the `dto` package contains the objects responsible for data transfer (Data Transfer Objects); it is divided into the
+`web` package, containing the DTOs used by the `*Controller` classes, and the `persistence` package, containing the DTOs
+used in database integration.
+- the `framework` module contains the classes that define behaviors and uses chosen for the application, for example, the
+_naming strategy_ adopted by JPA to assign a name to database tables/columns. This module is designed to
+contain classes agnostic to the business logic of the specific application being designed; in
+other words, this module could (and should) exist in a single central location and be shared by all
+applications that make up a system.
+- `ddl-gen` module, this module **does not become part of the _classpath_**; it is only a service tool that allows you to
+generate the SQL scripts needed to create (and destroy) the tables defined in the `model` module.
 
 ## Mapping
 
-Per la mappatura degli oggetti (ad esempio per mappare una _entity_ ad un DTO che rappresenti tale _entity_
-nascondendone determinate _property_ e viceversa), questa applicazione adotta [`MapStruct`](https://mapstruct.org/).
+For object mapping (for example, to map an _entity_ to a DTO that represents that _entity_,
+hiding certain _properties_ and vice versa), this application uses [`MapStruct`](https://mapstruct.org/).
 
 ## Logging
 
-Questa applicazione si limita all'utilizzo delle interfacce generiche di SLF4J, e delega la configurazione e la scelta
-di una specifica implementazione alla libreria `smart-console-logging-library`, introdotta nel `pom.xml` del modulo
-`application` del progetto.
+This application is limited to using the generic SLF4J interfaces, and delegates the configuration and choice
+of a specific implementation to the `smart-console-logging-library` library, introduced in the `pom.xml` of the project's
+`application` module.
 
 ## Database
 
-L'integrazione con il database avviene tramite Spring JPA. La relativa _dependency_ è introdotta dal modulo `model`, che
-come detto sopra si occupa di definire le _entity_ del database.
-**Tale modulo è pensato per le _entity_ specificamente definite per questa applicazione**, eventuali _entity_ di
-interessa trasversale **vanno definite in un modulo "centrale"**.
-L'accesso al database avviene tramite interfacce che estendono `JpaRepository`, tendenzialmente una per ogni entità;
-tali interfacce risiedono nel package `repository` del modulo `application`.
+Database integration is done via Spring JPA. The related dependency is introduced by the `model` module, which
+as mentioned above, defines the database's entities.
+**This module is designed for the entities specifically defined for this application**. Any entities of cross-application interest
+**must be defined in a "central" module**.
+Access to the database is via interfaces that extend `JpaRepository`, typically one for each entity;
+these interfaces reside in the `repository` package of the `application` module.
 
-## Integrazione con sistemi terzi
+## Integration with third-party systems
 
-Questa applicazione _non_ prevede un modulo `integration`/`adapter` contenente la logica di integrazione con sistemi
-terzi; il motivo di questa assenza è che si presuppone che un simile modulo possa essere trasversale a più microservizi,
-e quindi non abbia senso duplicarlo in ognuno di essi.
+This application does not include an `integration`/`adapter` module containing the integration logic with
+third-party systems; the reason for this absence is that it is assumed that such a module can be used across multiple microservices,
+and therefore it makes no sense to duplicate it in each of them.
 
-Sempre in tema di integrazioni, l'applicazione è però dotata di uno strumento (_dependency_
-`cz.habarta.typescript-generator`:`typescript-generator-maven-plugin`, nel modulo `model`) che genera automaticamente,
-ad ogni _build_, un file `.ts` contenente la "traduzione" in TypeScript dei DTO definiti nell'applicazione.
-È possibile configurare quali classi siano effettivamente processate dallo strumento agendo sulla _property_
-`<classPatterns>` nella configurazione del plugin.
+Still on the subject of integrations, the application is equipped with a tool (_dependency_
+`cz.habarta.typescript-generator`:`typescript-generator-maven-plugin`, in the `model` module) that automatically generates,
+at each _build_, a `.ts` file containing the "translation" into TypeScript of the DTOs defined in the application.
+You can configure which classes are actually processed by the tool by modifying the _property_
+`<classPatterns>` in the plugin configuration.
 
-Inoltre, grazie al plugin `org.springdoc`:`springdoc-openapi-maven-plugin`, l'applicazione genera automaticamente
-durante la fase `verify` anche il JSON contenente la descrizione OpenAPI dell'API da essa esposta.
-
-`TODO:` aggiungere menzione a feign!
+Furthermore, thanks to the `org.springdoc`:`springdoc-openapi-maven-plugin` plugin, the application automatically generates
+during the `verify` phase the JSON containing the OpenAPI description of the API it exposes.
 
 ## Docker
 
-Nella cartella [`src/main/docker`](./src/main/docker) sono già presenti due `Dockerfile` già funzionanti, uno per la
-regolare build JVM, e un altro per la build nativa (basata su GraalVM).
+Two working Dockerfiles are already present in the [`src/main/docker`](./src/main/docker) folder, one for the
+regular JVM build, and another for the native build (based on GraalVM).
 
-## Qualità del codice
+## Code Quality
 
-Questa applicazione è dotata di una configurazione che cerca di garantire un certo livello di qualità del codice, e uno
-standard di stile condiviso.
+This application is configured to ensure a certain level of code quality and a
+shared style standard.
 
-Tali obiettivi sono perseguiti tramite i seguenti _plugin_:
+These goals are achieved through the following plugins:
 
-- `maven-checkstyle-plugin`: in base alle regole definite nel file [`style_checks.xml`](./style_checks.xml), verifica
-  che lo stile utilizzato nelle classi del progetto sia coerente con tali regole
-- `spotbugs-maven-plugin`: verifica la presenza di eventuali _bug_, o pratiche di cattiva programmazione; tiene conto
-  delle esclusioni definite nel file [`spotbugs_filter.xml`](./spotbugs_filter.xml)
+- `maven-checkstyle-plugin`: based on the rules defined in the [`style_checks.xml`](./style_checks.xml) file, checks
+that the style used in the project's classes is consistent with these rules.
+- `spotbugs-maven-plugin`: checks for any bugs or poor programming practices; takes into account
+the exclusions defined in the [`spotbugs_filter.xml`](./spotbugs_filter.xml) file.
 
-Le verifiche esercitate da questi plugin vengono scatenate ad ogni _commit_ grazie al _pre-commit hook_ definito in [
+The checks performed by these plugins are triggered at every commit thanks to the pre-commit hook defined in [
 `.githooks/pre-commit`](./.githooks/pre-commit).
-Similmente, ad ogni commit, il _pre-commit hook_ [`.githooks/commit-msg`](./.githooks/commit-msg) verifica che il
-messaggio di commit rispetti la convenzione [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/).
+Similarly, at every commit, the pre-commit hook [`.githooks/commit-msg`](./.githooks/commit-msg) verifies that the
+commit message complies with the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) convention.
 
 ## Caching
 
-Questa applicazione implementa una banale pratica di _caching_ tramite `Caffeine`. Similmente a come accade per le
-dipendenze responsabili del RBAC, le relative configurazioni sono relegate ad un modulo dedicato;
-in questo modo, è possibile sostituire un _provider_ con un altro agendo semplicemente sul `pom.xml` del modulo
-`application`, senza toccare il codice in sé.
+This application implements a simple caching practice using `Caffeine`. Similar to the dependencies
+responsible for RBAC, the related configurations are relegated to a dedicated module;
+This way, you can replace one _provider_ with another by simply modifying the `pom.xml` of the
+`application` module, without touching the code itself.
 
 ## Changelog
 
-Grazie all'adozione dello standard [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/), è possibile
-auto-generare un changelog dell'applicazione.
-Esistono numerosi strumenti che consentono di farlo, questa applicazione è predisposta all'uso di [
+Thanks to the adoption of the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) standard, it is possible to
+autogenerate an application changelog.
+There are numerous tools that allow this; this application is designed to use [
 `node-autochglog`](https://github.com/BudWhiteStudying/node-autochglog):
 
 ```bash
 npx node-autochglog
 ```
 
-Tale strumento può essere configurato tramite il file [`node-autochglog.config.json`](./node-autochglog.config.json).
+This tool can be configured via the [`node-autochglog.config.json`](./node-autochglog.config.json) file.
