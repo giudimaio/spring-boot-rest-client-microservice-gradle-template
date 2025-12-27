@@ -15,8 +15,8 @@ The template is organized into multiple modules; it contains:
 - Typical structure:
 
 ```
-APP_NAME-application/
-├─ src/main/java/com/CORP_NAME/it/APP_NAME/application/
+__APP_NAME__-application/
+├─ src/main/java/com/__CORP_NAME__/it/__APP_NAME__/application/
 │ └─ Application.java # Spring Boot main class
 ├─ src/main/resources/
 │ └─ application.yml # Spring configurations
