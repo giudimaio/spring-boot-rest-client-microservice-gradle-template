@@ -1,40 +1,40 @@
 # DDL-gen application
 
-## Sommario
+## Summary
 
-Questa applicazione consente di generare automaticamente le DDL per creazione e distruzione di tutte le entità JPA
-previste dal micro-servizio.
+This application allows you to automatically generate DDLs for the creation and destruction of all JPA entities
+expected by the microservice.
 
-Si tratta di un'applicazione Spring Boot, ma di tipo "batch": parte, genera le DDL, termina.
+It is a Spring Boot application, but a "batch" application: it starts, generates the DDLs, and terminates.
 
-La configurazione dell'applicazione avviene tramite il file `application.yaml`, dove vengono impostati i
-parametri di connessione al database (un mero database H2 in-memory), ma soprattutto il dialetto SQL da utilizzare e
-la path alla quale generare i file SQL.
+The application is configured using the `application.yaml` file, where the
+database connection parameters (a simple H2 in-memory database) are set, but above all, the SQL dialect to use and
+the path to generate the SQL files.
 
-Il file `application.yaml` a sua volta fa riferimento ad alcune variabili d'ambiente, così da rendere
-flessibile il comportamento dell'applicazione. **È quindi necessario caricare un file `.env`, o comunque definire
-le variabili d'ambiente necessarie, al fine di eseguire l'applicazione.**
+The `application.yaml` file in turn references some environment variables, making
+the application's behavior flexible. **It is therefore necessary to load an `.env` file, or otherwise define
+the necessary environment variables, in order to run the application.**
 
-## Utilizzo
+## Usage
 
-I seguenti comandi, lanciati dalla _root_ del modulo `ddl-gen`, consentono la generazione delle DDL.
+The following commands, run from the _root_ of the `ddl-gen` module, allow you to generate the DDLs.
 
-Utilizzando i dialetti MariaDB e Oracle i log mostreranno un'eccezione, in quanto i rispettivi "non si aspettano" di
-connettersi ad un'istanza H2; l'eccezione tuttavia non è bloccante, e le DDL vengono comunque generate correttamente.
+When using Oracle dialect, the logs will show an exception because the respective "doesn't expect" to
+connect to an H2 instance; however, the exception is not blocking, and the DDLs are still generated correctly.
 
-**Per generare le DDL con sintassi H2:**
+**To generate DDLs with H2 syntax:**
 
 ```bash
 export $(grep -v '^#' h2.env | xargs) && ./gradlew bootRun
 ```
 
-**Per generare le DDL con sintassi Oracle:**
+**To generate DDLs with Oracle syntax:**
 
 ```bash
 export $(grep -v '^#' oracle.env | xargs) && ./gradlew bootRun
 ```
 
-**Per generare tutte le DDL in un colpo solo:**
+**To generate all DDLs at once:**
 
 ```bash
 export $(grep -v '^#' h2.env | xargs) && ./gradlew bootRun && export $(grep -v '^#' oracle.env | xargs) && ./gradlew bootRun
