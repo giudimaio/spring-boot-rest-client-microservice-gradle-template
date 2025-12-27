@@ -1,0 +1,20 @@
+#!/bin/sh
+
+if git rev-parse -q --verify MERGE_HEAD >/dev/null 2>&1; then
+  echo "merge commit detected, skipping pre-commit checks."
+  exit 0
+fi
+
+echo "running 'mvn clean verify -Plocal,h2,with-code-analysis'"
+mvn clean verify -Plocal,h2,with-code-analysis || exit 1
+echo "adding generated API files to git tree"
+git add **/generated/*.ts
+git add openapi.json
+echo "adding generated API project to git tree"
+git add smart-console-be-buoni-sconto-feign-api
+if command -v npx >/dev/null 2>&1; then
+  npx --yes node-autochglog
+  git add RELEASE_NOTES.md
+else
+  echo "WARN: skipping changelog generation because 'npx' is not on path"
+fi
